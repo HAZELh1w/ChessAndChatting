@@ -1,6 +1,5 @@
 package com.example.cc.entity;
 
-import lombok.Builder;
 import lombok.Data;
 
 /**

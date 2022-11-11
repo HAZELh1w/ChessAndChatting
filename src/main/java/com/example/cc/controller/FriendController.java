@@ -74,4 +74,5 @@ public class FriendController {
         List<User> friendList = friendMapper.getFriendList(uId);
         return friendList;
     }
+
 }

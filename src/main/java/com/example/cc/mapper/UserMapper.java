@@ -26,4 +26,5 @@ public interface UserMapper {
 
     @Update("update user set uPwd = #{uPwd} where uId = #{uId}")
     public int reviseUPwd(User user);
+
 }

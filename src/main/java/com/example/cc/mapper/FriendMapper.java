@@ -30,4 +30,5 @@ public interface FriendMapper {
 
     @Select("select u.uId,u.uName from user u join friendship f on u.uId = f.uIdB where f.uIdA = #{uId} and u.uId = f.uIdB")
     public List<User> getFriendList(long uId);
+
 }
