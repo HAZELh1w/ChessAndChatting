@@ -1,5 +1,6 @@
 package com.example.cc.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -8,6 +9,7 @@ import lombok.Data;
  * @create 2022/11/5 19:54
  */
 @Data
+@Builder
 public class User {
     private long uId;
 
@@ -15,15 +17,15 @@ public class User {
 
     private String uPwd;
 
-    private int wins = 0;
+    private int wins;
 
-    private int loses = 0;
+    private int loses;
 
-    private int total = 0;
+    private int total;
 
-    private int draws = 0;
+    private int draws;
 
-    private double winRate = 0;
+    private double winRate;
 
-    private int state = 0;
+    private int state;
 }
