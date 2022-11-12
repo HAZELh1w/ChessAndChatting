@@ -28,7 +28,7 @@ public interface FriendMapper {
     @Delete("delete from friendship where (uIdA = #{uIdA} and uIdB = #{uIdB}) or (uIdA = #{uIdB} and uIdB = #{uIdA})")
     public int deleteFriendship(long uIdA,long uIdB);
 
-    @Select("select u.uId,u.uName from user u join friendship f on u.uId = f.uIdB where f.uIdA = #{uId} and u.uId = f.uIdB")
+    @Select("select * from user u join friendship f on u.uId = f.uIdB where f.uIdA = #{uId} and u.uId = f.uIdB")
     public List<User> getFriendList(long uId);
 
 }

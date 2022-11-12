@@ -61,7 +61,7 @@ public class FriendController {
     }
 
     @DeleteMapping("/deleteFriendship")
-    public boolean deleteFriendship(@RequestParam  long uIdA, @RequestParam long uIdB){
+    public boolean deleteFriendship(@RequestParam long uIdA, @RequestParam long uIdB){
         int i = friendMapper.deleteFriendship(uIdA, uIdB);
         if(i > 0){
             return true;

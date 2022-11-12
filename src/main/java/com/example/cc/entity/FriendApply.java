@@ -1,6 +1,9 @@
 package com.example.cc.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
@@ -10,6 +13,7 @@ import java.sql.Timestamp;
  * @create 2022/11/10 13:58
  */
 @Data
+@Builder
 public class FriendApply {
     private long aplId;
 
