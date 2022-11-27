@@ -3,7 +3,6 @@ package com.example.cc.controller;
 import com.example.cc.entity.User;
 import com.example.cc.mapper.UserMapper;
 
-import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
