@@ -15,12 +15,12 @@ import java.util.List;
  */
 @Mapper
 public interface MessageMapper {
-    @Insert("insert into offlineMsg(msgId,sendTime,sender,msg,msgReceiver) values(#{msgId},#{sendTime},#{sender},#{msg},#{msgReceiver})")
+    @Insert("insert into message(sendTime,sender,msg,msgReceiver) values(#{sendTime},#{sender},#{msg},#{msgReceiver})")
     public int storeMessage(Message message);
 
-    @Select("select * from offlineMsg o where o.msgReceiver = #{uId} and o.sender = #{fId}")
+    @Select("select * from message o where o.msgReceiver = #{uId} and o.sender = #{fId}")
     public List<Message> fetchMessage(long uId,long fId);
 
-    @Delete("delete from offlineMsg o where o.msgReceiver = #{uId} and o.sender = #{fId}")
+    @Delete("delete from message o where o.msgReceiver = #{uId} and o.sender = #{fId}")
     public int deleteOverdueMessage(long uId,long fId);
 }

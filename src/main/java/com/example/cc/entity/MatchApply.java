@@ -8,19 +8,14 @@ import java.sql.Timestamp;
 /**
  * @author hazel
  * @description 功能描述
- * @create 2022/11/10 13:58
+ * @create 2022/11/28 15:48
  */
 @Data
 @Builder
-public class FriendApply {
+public class MatchApply {
     private long aplId;
-
-    private long applicant;
-
+    private User applicant;
     private int state;
-
     private Timestamp applyTime;
-
-    private long aplReceiver;
-
+    private String rId;
 }
