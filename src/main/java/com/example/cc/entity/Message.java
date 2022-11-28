@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 @Data
 @Builder
 public class Message {
-    private long msgId;
     private Timestamp sendTime;
     private long sender;
     private String msg;
