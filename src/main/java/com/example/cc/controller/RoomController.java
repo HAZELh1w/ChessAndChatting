@@ -103,6 +103,15 @@ public class RoomController {
     @GetMapping("/{rId}/getRoomInfo")
     public Room getRoomInfo(@PathVariable String rId) {
         Room room = roomMap.get(rId);
+        if (room != null){
+            HashMap<Long, User> members = room.getMembers();
+            HashMap<Long, MatchApply> applies = room.getApplies();
+            for (MatchApply matchApply : applies.values()){
+                if(!members.containsKey(matchApply.getApplicant())){
+                    applies.remove(matchApply.getAplId());
+                }
+            }
+        }
         return room;
     }
 
@@ -210,6 +219,7 @@ public class RoomController {
     public boolean initBoard(@PathVariable String rId) {
         Room room = roomMap.get(rId);
         if(room != null){
+            room.setRoomState(1);
             HashMap<Integer, Chess> chessBoard = room.getChessBoard();
             for(int i = 0; i < 32; i++){
                 chessBoard.get(i).setAlive(true);
