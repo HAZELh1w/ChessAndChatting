@@ -35,6 +35,7 @@ public class RoomController {
         room.setChessBoard(new HashMap<Integer,Chess>());
         room.setPreChessBoard(new HashMap<Integer,Chess>());
         room.setApplies(new HashMap<Long,MatchApply>());
+        room.setRoomState(0);
         roomMap.put(rId, room);
         return room;
     }
@@ -109,7 +110,7 @@ public class RoomController {
     public boolean transferOwner(@PathVariable String rId, @RequestParam long uId) {
         Room room = roomMap.get(rId);
         if (room != null) {
-            if (room.getMembers().containsKey(uId)) {
+            if (room.getMembers().containsKey(uId) && room.getMembers().containsKey(uId)) {
                 room.setOwner(uId);
                 return true;
             }
@@ -131,7 +132,6 @@ public class RoomController {
     public boolean postMatchApply(@PathVariable String rId, @RequestBody MatchApply apply) {
         apply.setApplyTime(new Timestamp(System.currentTimeMillis()));
         apply.setAplId(System.currentTimeMillis());
-        apply.setState(0);
         apply.setRId(rId);
         Room room = roomMap.get(rId);
         if(room != null){
@@ -148,9 +148,9 @@ public class RoomController {
         if(room != null){
             HashMap<Long, MatchApply> applies = room.getApplies();
             MatchApply tarApply = applies.get(apply.getAplId());
-            if(tarApply.getState() == 0){
-                tarApply.setState(1);
-                long applicant = tarApply.getApplicant();
+            long applicant = tarApply.getApplicant();
+            applies.remove(apply.getAplId());
+            if(room.getMembers().containsKey(applicant) && room.getRoomState() == 0){
                 room.setPlayer(applicant);
                 return true;
             }

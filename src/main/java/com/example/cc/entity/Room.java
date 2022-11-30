@@ -3,9 +3,7 @@ package com.example.cc.entity;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author hazel
@@ -27,4 +25,5 @@ public class Room {
     private long player;
     private HashMap<Long,MatchApply> applies;
     private long repentanceApplicant;
+    private int roomState;
 }
