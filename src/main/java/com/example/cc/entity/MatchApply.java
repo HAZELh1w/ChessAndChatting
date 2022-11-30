@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @Builder
 public class MatchApply {
     private long aplId;
-    private User applicant;
+    private long applicant;
     private int state;
     private Timestamp applyTime;
     private String rId;

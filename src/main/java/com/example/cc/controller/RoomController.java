@@ -34,6 +34,7 @@ public class RoomController {
         room.setMemberCount(0);
         room.setChessBoard(new HashMap<Integer,Chess>());
         room.setPreChessBoard(new HashMap<Integer,Chess>());
+        room.setApplies(new HashMap<Long,MatchApply>());
         roomMap.put(rId, room);
         return room;
     }
@@ -149,6 +150,8 @@ public class RoomController {
             MatchApply tarApply = applies.get(apply.getAplId());
             if(tarApply.getState() == 0){
                 tarApply.setState(1);
+                long applicant = tarApply.getApplicant();
+                room.setPlayer(applicant);
                 return true;
             }
         }
