@@ -23,6 +23,8 @@ public class Room {
     private int memberCount;
     private int capacity;
     private HashMap<Integer,Chess> chessBoard;
+    private HashMap<Integer,Chess> preChessBoard;
     private long player;
     private HashMap<Long,MatchApply> applies;
+    private long repentanceApplicant;
 }

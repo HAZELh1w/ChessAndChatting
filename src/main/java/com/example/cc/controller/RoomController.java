@@ -1,11 +1,9 @@
 package com.example.cc.controller;
 
-import com.example.cc.entity.Chess;
-import com.example.cc.entity.MatchApply;
-import com.example.cc.entity.Room;
-import com.example.cc.entity.User;
+import com.example.cc.entity.*;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.MaskFormatter;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -19,19 +17,25 @@ import java.util.*;
 public class RoomController {
     private static Map<String, Room> roomMap = new HashMap<>();
 
+    private static Map<Long, List<Message>> msgMap = new HashMap<>();
+
     @PostMapping("/createRoom")
-    public boolean createRoom(@RequestBody Room room) {
+    public Room createRoom(@RequestBody Room room) {
         String rId = "r" + System.currentTimeMillis();
         room.setRID(rId);
         if(room.getRName() == null){
             room.setRName(rId);
         }
         if (roomMap.containsKey(rId) && !room.getMembers().isEmpty()) {
-            return false;
+            return null;
         }
+        room.setCapacity(30);
+        room.setMembers(new HashMap<Long,User>());
         room.setMemberCount(0);
+        room.setChessBoard(new HashMap<Integer,Chess>());
+        room.setPreChessBoard(new HashMap<Integer,Chess>());
         roomMap.put(rId, room);
-        return true;
+        return room;
     }
 
     @GetMapping("/{rId}/checkRPwd")
@@ -55,6 +59,7 @@ public class RoomController {
                 int count = room.getMemberCount();
                 count++;
                 room.setMemberCount(count);
+                msgMap.put(user.getUId(),new ArrayList<Message>());
                 return true;
             }
         }
@@ -72,6 +77,7 @@ public class RoomController {
                 members.remove(uId);
                 count--;
                 room.setMemberCount(count);
+                msgMap.remove(uId);
                 return true;
             } else {
                 members.remove(owner);
@@ -85,6 +91,7 @@ public class RoomController {
                 }
                 count--;
                 room.setMemberCount(count);
+                msgMap.remove(uId);
                 return true;
             }
         }
@@ -164,15 +171,105 @@ public class RoomController {
         return rooms;
     }
 
-//    @PostMapping("/{rId}/initBoard")
-//    public boolean initBoard(@PathVariable String rId) {
-//        Room room = roomMap.get(rId);
-//        if(room != null){
-//            HashMap<Integer, Chess> chessBoard = room.getChessBoard();
-//            for(int i = 0; )
-//        }
-//        return false;
-//    }
+    @PostMapping("/{rId}/sendMsg")
+    public boolean sendMsg(@PathVariable String rId, @RequestBody Message message){
+        Room room = roomMap.get(rId);
+        if(room != null){
+            message.setSendTime(new Timestamp(System.currentTimeMillis()));
+            long broadcastRoom = Long.parseLong(rId.substring(1));
+            message.setMsgReceiver(broadcastRoom);
+            HashMap<Long, User> memberMap = room.getMembers();
+            for (Long memberKey : memberMap.keySet()) {
+                List<Message> messageList = msgMap.get(memberKey);
+                messageList.add(message);
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    @GetMapping("/{rId}/getMsg")
+    public List<Message> getMsg(@PathVariable String rId, @RequestParam long uId){
+        List<Message> res = new ArrayList<>();
+        Room room = roomMap.get(rId);
+        long broadcastRoom = Long.parseLong(rId.substring(1));
+        if(room != null){
+            for (Message message : msgMap.get(uId)) {
+                if(message.getMsgReceiver() == broadcastRoom){
+                    res.add(message);
+                }
+            }
+        }
+        return res;
+    }
 
+    @PostMapping("/{rId}/initBoard")
+    public boolean initBoard(@PathVariable String rId) {
+        Room room = roomMap.get(rId);
+        if(room != null){
+            HashMap<Integer, Chess> chessBoard = room.getChessBoard();
+            for(int i = 0; i < 32; i++){
+                chessBoard.get(i).setAlive(true);
+            }
+        }
+        return false;
+    }
 
+    @PutMapping("/{rId}/move")
+    public boolean move(@PathVariable String rId, @RequestBody Move move){
+        Room room = roomMap.get(rId);
+        if (room != null){
+            int kill = move.getKill();
+            HashMap<Integer, Chess> chessBoard = room.getChessBoard();
+            HashMap<Integer, Chess> preChessBoard = room.getPreChessBoard();
+            for(int i = 0; i < 32; i++){
+                preChessBoard.get(i).setAlive(chessBoard.get(i).isAlive());
+                preChessBoard.get(i).setXPos(chessBoard.get(i).getXPos());
+                preChessBoard.get(i).setYPos(chessBoard.get(i).getYPos());
+            }
+            if(kill >= 0){
+                chessBoard.get(kill).setAlive(false);
+            }
+            chessBoard.get(move.getCId()).setXPos(move.getNewXPos());
+            chessBoard.get(move.getCId()).setYPos(move.getNewYPos());
+            return true;
+        }
+        return false;
+    }
+
+    @PostMapping("/{rId}/postRepentance")
+    public boolean postRepentance(@PathVariable long rId,@RequestBody User user){
+        Room room = roomMap.get(rId);
+        if (room != null){
+            if(user.getUId() == room.getPlayer() || user.getState() == room.getOwner()){
+                room.setRepentanceApplicant(user.getUId());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @PutMapping("/{rId}/acceptRepentance")
+    public boolean acceptRepentance(@PathVariable long rId){
+        Room room = roomMap.get(rId);
+        if (room != null){
+            HashMap<Integer, Chess> chessBoard = room.getChessBoard();
+            HashMap<Integer, Chess> preChessBoard = room.getPreChessBoard();
+            for (int i = 0; i < 32; i++){
+                Chess chess = chessBoard.get(i);
+                Chess preChess = preChessBoard.get(i);
+                chess.setAlive(preChess.isAlive());
+                chess.setXPos(preChess.getXPos());
+                chess.setYPos(preChess.getYPos());
+                room.setRepentanceApplicant(0);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @GetMapping("/{rId}/surrender")
+    public boolean surrender(){
+        return false;
+    }
 }
