@@ -377,6 +377,8 @@ public class RoomController {
                 history1.setRes(-1);
                 history2.setRes(1);
             }
+            historyMapper.recordHistory(history1);
+            historyMapper.recordHistory(history2);
             room.setRoomState(0);
             return true;
         }
