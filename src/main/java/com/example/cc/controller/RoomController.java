@@ -1,9 +1,10 @@
 package com.example.cc.controller;
 
 import com.example.cc.entity.*;
+import com.example.cc.mapper.HistoryMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.MaskFormatter;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -18,6 +19,9 @@ public class RoomController {
     private static Map<String, Room> roomMap = new HashMap<>();
 
     private static Map<Long, List<Message>> msgMap = new HashMap<>();
+
+    @Autowired
+    private HistoryMapper historyMapper;
 
     @PostMapping("/createRoom")
     public Room createRoom(@RequestBody Room room) {
@@ -111,14 +115,19 @@ public class RoomController {
                     applies.remove(matchApply.getAplId());
                 }
             }
+            long player = room.getPlayer();
+            if (!members.containsKey(player)){
+                room.setPlayer(0);
+            }
         }
         return room;
     }
 
     @PutMapping("/{rId}/transferOwner")
-    public boolean transferOwner(@PathVariable String rId, @RequestParam long uId) {
+    public boolean transferOwner(@PathVariable String rId, @RequestBody User user) {
         Room room = roomMap.get(rId);
         if (room != null) {
+            long uId = user.getUId();
             if (room.getMembers().containsKey(uId) && room.getMembers().containsKey(uId)) {
                 room.setOwner(uId);
                 return true;
@@ -221,9 +230,35 @@ public class RoomController {
         if(room != null){
             room.setRoomState(1);
             HashMap<Integer, Chess> chessBoard = room.getChessBoard();
-            for(int i = 0; i < 32; i++){
-                chessBoard.get(i).setAlive(true);
+            for (int i = 0; i < 32; i++){
+                Chess chess = Chess.builder().cId(i).alive(true).build();
+                chessBoard.put(i,chess);
             }
+            for (int i = 0; i < 9; i++){
+                Chess chess = chessBoard.get(i);
+                chess.setXPos(i);
+                chess.setYPos(0);
+                Chess chess1 = chessBoard.get(i + 23);
+                chess1.setXPos(i);
+                chess1.setYPos(9);
+            }
+            chessBoard.get(10).setXPos(1);
+            chessBoard.get(10).setYPos(2);
+            chessBoard.get(11).setXPos(7);
+            chessBoard.get(11).setYPos(2);
+            chessBoard.get(21).setXPos(1);
+            chessBoard.get(21).setYPos(7);
+            chessBoard.get(22).setXPos(7);
+            chessBoard.get(22).setYPos(7);
+            for (int i = 11; i < 16; i++){
+                Chess chess = chessBoard.get(i);
+                chess.setXPos(2*(i-11));
+                chess.setYPos(3);
+                Chess chess1 = chessBoard.get(i+5);
+                chess1.setXPos(2*(i-11));
+                chess1.setYPos(6);
+            }
+            return true;
         }
         return false;
     }
@@ -251,10 +286,10 @@ public class RoomController {
     }
 
     @PostMapping("/{rId}/postRepentance")
-    public boolean postRepentance(@PathVariable long rId,@RequestBody User user){
+    public boolean postRepentance(@PathVariable String rId,@RequestBody User user){
         Room room = roomMap.get(rId);
         if (room != null){
-            if(user.getUId() == room.getPlayer() || user.getState() == room.getOwner()){
+            if(user.getUId() == room.getPlayer() || user.getUId() == room.getOwner()){
                 room.setRepentanceApplicant(user.getUId());
                 return true;
             }
@@ -263,7 +298,7 @@ public class RoomController {
     }
 
     @PutMapping("/{rId}/acceptRepentance")
-    public boolean acceptRepentance(@PathVariable long rId){
+    public boolean acceptRepentance(@PathVariable String rId){
         Room room = roomMap.get(rId);
         if (room != null){
             HashMap<Integer, Chess> chessBoard = room.getChessBoard();
@@ -274,15 +309,77 @@ public class RoomController {
                 chess.setAlive(preChess.isAlive());
                 chess.setXPos(preChess.getXPos());
                 chess.setYPos(preChess.getYPos());
-                room.setRepentanceApplicant(0);
+            }
+            room.setRepentanceApplicant(0);
+            return true;
+        }
+        return false;
+    }
+
+    @PutMapping("/{rId}/rejectRepentance")
+    public boolean rejectRepentance(@PathVariable String rId){
+        Room room = roomMap.get(rId);
+        if (room != null){
+            room.setRepentanceApplicant(0);
+            return true;
+        }
+        return false;
+    }
+
+    @PostMapping("/{rId}/postDraw")
+    public boolean postDraw(@PathVariable String rId,@RequestBody User user){
+        Room room = roomMap.get(rId);
+        if (room != null){
+            if(user.getUId() == room.getPlayer() || user.getUId() == room.getOwner()){
+                room.setDrawApplicant(user.getUId());
                 return true;
             }
         }
         return false;
     }
 
-    @GetMapping("/{rId}/surrender")
-    public boolean surrender(){
+    @PutMapping("/{rId}/acceptDraw")
+    public boolean acceptDraw(@PathVariable String rId){
+        Room room = roomMap.get(rId);
+        if (room != null){
+            room.setDrawApplicant(0);
+            return true;
+        }
+        return false;
+    }
+
+    @PutMapping("/{rId}/rejectDraw")
+    public boolean rejectDraw(@PathVariable String rId){
+        Room room = roomMap.get(rId);
+        if (room != null){
+            room.setDrawApplicant(0);
+            return true;
+        }
+        return false;
+    }
+
+
+
+    @PostMapping("/{rId}/endGame")
+    public boolean endGame(@PathVariable String rId,@RequestBody User winner){
+        Room room = roomMap.get(rId);
+        if (room != null){
+            long owner = room.getOwner();
+            long player = room.getPlayer();
+            Timestamp endTime = new Timestamp(System.currentTimeMillis());
+            History history1 = History.builder().uId(owner).res(0).endTime(endTime).fae(player).build();
+            History history2 = History.builder().uId(player).res(0).endTime(endTime).fae(owner).build();
+            if(winner.getUId() == owner){
+                history1.setRes(1);
+                history2.setRes(-1);
+            }
+            if(winner.getUId() == player){
+                history1.setRes(-1);
+                history2.setRes(1);
+            }
+            room.setRoomState(0);
+            return true;
+        }
         return false;
     }
 }

@@ -24,6 +24,12 @@ public class FriendController {
     public boolean postFriendApply(@RequestBody FriendApply friendApply){
         friendApply.setAplId(System.currentTimeMillis());
         friendApply.setApplyTime(new Timestamp(System.currentTimeMillis()));
+        List<User> friendList = friendMapper.getFriendList(friendApply.getApplicant());
+        for (User friend : friendList){
+            if (friend.getUId() == friendApply.getAplReceiver()){
+                return false;
+            }
+        }
         int i = friendMapper.addFriendApply(friendApply);
         if(i > 0){
             return true;
