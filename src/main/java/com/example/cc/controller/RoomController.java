@@ -251,10 +251,10 @@ public class RoomController {
             chess1.setXPos(i);
             chess1.setYPos(9);
         }
-        chessBoard.get(10).setXPos(1);
+        chessBoard.get(9).setXPos(1);
+        chessBoard.get(9).setYPos(2);
+        chessBoard.get(10).setXPos(7);
         chessBoard.get(10).setYPos(2);
-        chessBoard.get(11).setXPos(7);
-        chessBoard.get(11).setYPos(2);
         chessBoard.get(21).setXPos(1);
         chessBoard.get(21).setYPos(7);
         chessBoard.get(22).setXPos(7);
