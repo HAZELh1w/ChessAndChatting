@@ -230,37 +230,43 @@ public class RoomController {
         if(room != null){
             room.setRoomState(1);
             HashMap<Integer, Chess> chessBoard = room.getChessBoard();
-            for (int i = 0; i < 32; i++){
-                Chess chess = Chess.builder().cId(i).alive(true).build();
-                chessBoard.put(i,chess);
-            }
-            for (int i = 0; i < 9; i++){
-                Chess chess = chessBoard.get(i);
-                chess.setXPos(i);
-                chess.setYPos(0);
-                Chess chess1 = chessBoard.get(i + 23);
-                chess1.setXPos(i);
-                chess1.setYPos(9);
-            }
-            chessBoard.get(10).setXPos(1);
-            chessBoard.get(10).setYPos(2);
-            chessBoard.get(11).setXPos(7);
-            chessBoard.get(11).setYPos(2);
-            chessBoard.get(21).setXPos(1);
-            chessBoard.get(21).setYPos(7);
-            chessBoard.get(22).setXPos(7);
-            chessBoard.get(22).setYPos(7);
-            for (int i = 11; i < 16; i++){
-                Chess chess = chessBoard.get(i);
-                chess.setXPos(2*(i-11));
-                chess.setYPos(3);
-                Chess chess1 = chessBoard.get(i+5);
-                chess1.setXPos(2*(i-11));
-                chess1.setYPos(6);
-            }
+            HashMap<Integer, Chess> preChessBoard = room.getChessBoard();
+            init(chessBoard);
+            init(preChessBoard);
             return true;
         }
         return false;
+    }
+
+    public void init(HashMap<Integer, Chess> chessBoard){
+        for (int i = 0; i < 32; i++){
+            Chess chess = Chess.builder().cId(i).alive(true).build();
+            chessBoard.put(i,chess);
+        }
+        for (int i = 0; i < 9; i++){
+            Chess chess = chessBoard.get(i);
+            chess.setXPos(i);
+            chess.setYPos(0);
+            Chess chess1 = chessBoard.get(i + 23);
+            chess1.setXPos(i);
+            chess1.setYPos(9);
+        }
+        chessBoard.get(10).setXPos(1);
+        chessBoard.get(10).setYPos(2);
+        chessBoard.get(11).setXPos(7);
+        chessBoard.get(11).setYPos(2);
+        chessBoard.get(21).setXPos(1);
+        chessBoard.get(21).setYPos(7);
+        chessBoard.get(22).setXPos(7);
+        chessBoard.get(22).setYPos(7);
+        for (int i = 11; i < 16; i++){
+            Chess chess = chessBoard.get(i);
+            chess.setXPos(2*(i-11));
+            chess.setYPos(3);
+            Chess chess1 = chessBoard.get(i+5);
+            chess1.setXPos(2*(i-11));
+            chess1.setYPos(6);
+        }
     }
 
     @PutMapping("/{rId}/move")
