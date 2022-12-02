@@ -267,7 +267,7 @@ public class RoomController {
     public boolean move(@PathVariable String rId, @RequestBody Move move){
         Room room = roomMap.get(rId);
         if (room != null){
-            int kill = move.getKill();
+            boolean kill = move.isKill();
             HashMap<Integer, Chess> chessBoard = room.getChessBoard();
             HashMap<Integer, Chess> preChessBoard = room.getPreChessBoard();
             for(int i = 0; i < 32; i++){
@@ -275,8 +275,14 @@ public class RoomController {
                 preChessBoard.get(i).setXPos(chessBoard.get(i).getXPos());
                 preChessBoard.get(i).setYPos(chessBoard.get(i).getYPos());
             }
-            if(kill >= 0){
-                chessBoard.get(kill).setAlive(false);
+            if(kill){
+                for (int i = 0; i < 32; i++){
+                    Chess preChess = preChessBoard.get(i);
+                    if (preChess.getXPos() == move.getNewXPos() && preChess.getYPos() == move.getNewYPos() && preChess.isAlive()){
+                        Chess chess = chessBoard.get(i);
+                        chess.setAlive(false);
+                    }
+                }
             }
             chessBoard.get(move.getCId()).setXPos(move.getNewXPos());
             chessBoard.get(move.getCId()).setYPos(move.getNewYPos());

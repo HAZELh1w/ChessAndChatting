@@ -16,5 +16,5 @@ public class Move {
     private int yPos;
     private int newXPos;
     private int newYPos;
-    private int kill;
+    private boolean kill;
 }
