@@ -14,7 +14,7 @@ import java.util.List;
  */
 @Mapper
 public interface HistoryMapper {
-    @Insert("insert into history(uId,res,endTime,fae) values(#{uId},#{res},#{endTime},#{fae}")
+    @Insert("insert into history(uId,res,endTime,fae) values(#{uId},#{res},#{endTime},#{fae})")
     public int recordHistory(History history);
 
     @Select("select * from history h where h.uId = #{uId}")
