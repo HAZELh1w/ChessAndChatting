@@ -29,4 +29,7 @@ public interface UserMapper {
 
     @Update("update user set wins = #{wins}, loses = #{loses}, total = #{total}, draws = #{draws} where uId = #{uId}")
     public int updateMatchInfo(User user);
+
+    @Update("update user set state = #{state} where uId = #{uId}")
+    public int updateState(User user);
 }

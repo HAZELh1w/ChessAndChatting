@@ -26,12 +26,12 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public boolean login(@RequestBody User user, HttpServletRequest request){
+    public boolean login(@RequestBody User user){
         User userDB = userMapper.findByUId(user.getUId());
         Boolean loginSuccess = userDB.getUPwd().equals(user.getUPwd());
         if(loginSuccess){
-            HttpSession session = request.getSession();
-            session.setAttribute("uId",user.getUId());
+            userDB.setState(1);
+            userMapper.updateState(userDB);
         }
         return loginSuccess;
     }
@@ -59,6 +59,12 @@ public class UserController {
             return true;
         }
         return false;
+    }
+
+    @PutMapping("/exit")
+    public void exit(@RequestParam User user){
+        user.setState(0);
+        userMapper.updateState(user);
     }
 
 }
