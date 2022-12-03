@@ -62,7 +62,7 @@ public class UserController {
     }
 
     @PutMapping("/exit")
-    public void exit(@RequestParam User user){
+    public void exit(@RequestBody User user){
         user.setState(0);
         userMapper.updateState(user);
     }
