@@ -234,7 +234,7 @@ public class RoomController {
         if(room != null){
             room.setRoomState(1);
             HashMap<Integer, Chess> chessBoard = room.getChessBoard();
-            HashMap<Integer, Chess> preChessBoard = room.getChessBoard();
+            HashMap<Integer, Chess> preChessBoard = room.getPreChessBoard();
             init(chessBoard);
             init(preChessBoard);
             return true;
@@ -242,7 +242,7 @@ public class RoomController {
         return false;
     }
 
-    public void init(HashMap<Integer, Chess> chessBoard){
+    public void init(HashMap<Integer,Chess> chessBoard){
         for (int i = 0; i < 32; i++){
             Chess chess = Chess.builder().cId(i).alive(true).build();
             chessBoard.put(i,chess);
@@ -275,6 +275,7 @@ public class RoomController {
 
     @PutMapping("/{rId}/move")
     public boolean move(@PathVariable String rId, @RequestBody Move move){
+        System.out.println(move);
         Room room = roomMap.get(rId);
         if (room != null){
             boolean kill = move.isKill();
