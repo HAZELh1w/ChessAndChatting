@@ -2,6 +2,7 @@ package com.example.cc.controller;
 
 import com.example.cc.entity.*;
 import com.example.cc.mapper.HistoryMapper;
+import com.example.cc.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,9 @@ public class RoomController {
 
     @Autowired
     private HistoryMapper historyMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @PostMapping("/createRoom")
     public Room createRoom(@RequestBody Room room) {
@@ -381,17 +385,32 @@ public class RoomController {
             Timestamp endTime = new Timestamp(System.currentTimeMillis());
             History history1 = History.builder().uId(owner).res(0).endTime(endTime).fae(player).build();
             History history2 = History.builder().uId(player).res(0).endTime(endTime).fae(owner).build();
+            User user1 = userMapper.findByUId(owner);
+            User user2 = userMapper.findByUId(player);
+            user1.setTotal(user1.getTotal()+1);
+            user2.setTotal(user2.getTotal()+1);
             if(winner.getUId() == owner){
                 history1.setRes(1);
                 history2.setRes(-1);
+                user1.setWins(user1.getWins()+1);
+                user2.setLoses(user2.getLoses()+1);
             }
             if(winner.getUId() == player){
                 history1.setRes(-1);
                 history2.setRes(1);
+                user2.setWins(user2.getWins()+1);
+                user1.setLoses(user1.getLoses()+1);
+            }
+            if(winner.getUId() == 0){
+                user1.setDraws(user1.getDraws()+1);
+                user2.setDraws(user2.getDraws()+1);
             }
             historyMapper.recordHistory(history1);
             historyMapper.recordHistory(history2);
+            userMapper.updateMatchInfo(user1);
+            userMapper.updateMatchInfo(user2);
             room.setRoomState(0);
+            room.setPlayer(0);
             return true;
         }
         return false;

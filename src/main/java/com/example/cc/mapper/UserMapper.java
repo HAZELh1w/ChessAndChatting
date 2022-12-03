@@ -27,4 +27,6 @@ public interface UserMapper {
     @Update("update user set uPwd = #{uPwd} where uId = #{uId}")
     public int reviseUPwd(User user);
 
+    @Update("update user set wins = #{wins}, loses = #{loses}, total = #{total}, draws = #{draws}")
+    public int updateMatchInfo(User user);
 }
