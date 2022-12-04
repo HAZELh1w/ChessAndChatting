@@ -26,5 +26,6 @@ public class Room {
     private HashMap<Long,MatchApply> applies;
     private long repentanceApplicant;
     private long drawApplicant;
+    private long surrenderApplicant;
     private int roomState;//0空闲，1对局中
 }

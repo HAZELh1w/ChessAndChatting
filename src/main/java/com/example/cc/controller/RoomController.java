@@ -375,6 +375,18 @@ public class RoomController {
         return false;
     }
 
+    @PostMapping("/{rId}/postSurrender")
+    public boolean postSurrender(@PathVariable String rId,@RequestBody User user){
+        Room room = roomMap.get(rId);
+        if (room != null){
+            if(user.getUId() == room.getPlayer() || user.getUId() == room.getOwner()){
+                room.setSurrenderApplicant(user.getUId());
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
     @PostMapping("/{rId}/endGame")
