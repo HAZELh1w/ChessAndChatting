@@ -3,6 +3,7 @@ package com.example.cc.controller;
 import com.example.cc.entity.FriendApply;
 import com.example.cc.entity.User;
 import com.example.cc.mapper.FriendMapper;
+import com.example.cc.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,9 @@ public class FriendController {
     @Autowired
     private FriendMapper friendMapper;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @PostMapping("/postFriendApply")
     public boolean postFriendApply(@RequestBody FriendApply friendApply){
         friendApply.setAplId(System.currentTimeMillis());
@@ -31,7 +35,8 @@ public class FriendController {
             }
         }
         int i = friendMapper.addFriendApply(friendApply);
-        if(i > 0){
+        User u = userMapper.findByUId(friendApply.getAplReceiver());
+        if(i > 0 && u != null){
             return true;
         }
         return false;
